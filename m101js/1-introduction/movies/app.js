@@ -1,5 +1,6 @@
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
+const bodyParser = require('body-parser');
 
 const url = 'mongodb://localhost:27017';
 const dbName = 'video';
@@ -11,6 +12,7 @@ const port = 3000;
 
 app.engine('html', engines.nunjucks);
 app.set('view engine', 'html');
+app.use(bodyParser.urlencoded({ extended: true }));
 
 MongoClient.connect(url, { useNewUrlParser: true }, (err, client) => {
   assert.equal(null, err);
@@ -22,6 +24,28 @@ MongoClient.connect(url, { useNewUrlParser: true }, (err, client) => {
     findMovies(db, (data) => {
       res.render('movies', { 'movies': data });
     });
+  });
+
+  app.get('/add_movie', (req, res, next) => {
+    res.render('add_movie', {});
+  });
+
+  app.post('/add_movie', (req, res, next) => {
+    let title = req.body.title;
+    let year = req.body.year;
+    let imdb = req.body.imdb;
+
+    if ((title == '') || (year == '') || (imdb == '')) {
+      next('Please provide an entry for all fields');
+    } else {
+      db.collection('movies').insertOne(
+        { "title": title, "year": year, "imdb": imdb },
+        (err, doc) => {
+          assert.equal(null, err);
+          res.send("Document inserted with _id: " + doc.insertedId);
+        }
+      );
+    }
   });
 
   app.get('/insert', (req, res) => {
@@ -42,7 +66,8 @@ MongoClient.connect(url, { useNewUrlParser: true }, (err, client) => {
     });
   });
 
-  app.use((req, res) => res.sendStatus(404));
+  // app.use((req, res) => res.sendStatus(404));
+  app.use(errorHandler);
 
   app.listen(port, () => console.log(`Express listening on port ${port}`))
 });
@@ -101,4 +126,10 @@ const indexCollection = (db, callback) => {
       callback();
     }
   );
+}
+
+const errorHandler = (err, req, res, next) => {
+  console.error(err.message);
+  console.error(err.stack);
+  res.status(500).render('error_template', { error: err });
 }
