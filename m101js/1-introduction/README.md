@@ -20,9 +20,7 @@ BSON plays the role of a canonical (i.e., "unique") representation of documents 
 - [ ] False
 
 ## Hello World on Node.js
-"Hello World" http response with ES6\
-`node hello-world-http.js`
-
+"Hello World" http response with Node.js and ES6\
 
 ## Intro to the Node.js Driver
 MongoDB Node.js Driver version 3.1.6, MongoDB version 4.0.2\
