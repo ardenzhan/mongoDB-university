@@ -35,8 +35,8 @@ Hello, Agent 007.
 Demonstrating CRUD with MongoDB Node.js 3.1.x driver, Express routes and template engines, and ES6.
 
 ## Getting Started
-https://nodejs.org/en/docs/guides/getting-started-guide/\
-http://mongodb.github.io/node-mongodb-native/3.1/quick-start/quick-start/\
-http://mongodb.github.io/node-mongodb-native/3.1/api/Collection.html\
-http://expressjs.com/en/starter/hello-world.html\
-http://expressjs.com/en/guide/using-template-engines.html
+  - https://nodejs.org/en/docs/guides/getting-started-guide/
+  - http://mongodb.github.io/node-mongodb-native/3.1/quick-start/quick-start/
+  - http://mongodb.github.io/node-mongodb-native/3.1/api/Collection.html
+  - http://expressjs.com/en/starter/hello-world.html
+  - http://expressjs.com/en/guide/using-template-engines.html
