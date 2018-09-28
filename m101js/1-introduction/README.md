@@ -19,12 +19,21 @@ BSON plays the role of a canonical (i.e., "unique") representation of documents 
 - [x] True
 - [ ] False
 
-## Hello World on Node.js
-"Hello World" http response with Node.js and ES6\
+## Homework 1.1
+Hello from MongoDB!
 
-## Intro to the Node.js Driver
-MongoDB Node.js Driver version 3.1.6, MongoDB version 4.0.2\
+## Homework 1.2
+I like kittens
+
+## Homework 1.3
+Hello, Agent 007.
+
+## Movies
+Demonstrating CRUD with MongoDB Node.js 3.1.x driver, Express routes and template engines, and ES6.
+
+## Getting Started
+https://nodejs.org/en/docs/guides/getting-started-guide/
 http://mongodb.github.io/node-mongodb-native/3.1/quick-start/quick-start/
-
-## Hello World using Express and Templates
-"Hello World" rendering with express and with view engines templates
+http://mongodb.github.io/node-mongodb-native/3.1/api/Collection.html
+http://expressjs.com/en/starter/hello-world.html
+http://expressjs.com/en/guide/using-template-engines.html
