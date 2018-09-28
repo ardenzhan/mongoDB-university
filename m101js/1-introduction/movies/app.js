@@ -1,4 +1,5 @@
 const MongoClient = require('mongodb').MongoClient;
+const ObjectId = require('mongodb').ObjectId;
 const assert = require('assert');
 const bodyParser = require('body-parser');
 
@@ -26,64 +27,82 @@ MongoClient.connect(url, { useNewUrlParser: true }, (err, client) => {
     });
   });
 
-  app.get('/add_movie', (req, res, next) => {
-    res.render('add_movie', {});
+  app.get('/add-movie', (req, res, next) => {
+    res.render('add-movie', {});
   });
 
-  app.post('/add_movie', (req, res, next) => {
-    let title = req.body.title;
-    let year = req.body.year;
-    let imdb = req.body.imdb;
+  app.post('/add-movie', (req, res, next) => {
+    let movie = {
+      title: req.body.title,
+      year: req.body.year,
+      imdb: req.body.imdb
+    };
 
-    if ((title == '') || (year == '') || (imdb == '')) {
+    if ((movie.title == '') || (movie.year == '') || (movie.imdb == '')) {
       next('Please provide an entry for all fields');
     } else {
-      db.collection('movies').insertOne(
-        { "title": title, "year": year, "imdb": imdb },
-        (err, doc) => {
-          assert.equal(null, err);
-          res.send("Document inserted with _id: " + doc.insertedId);
-        }
-      );
+      addMovie(db, movie, (doc) => {
+        res.redirect('/');
+      });
     }
   });
 
-  app.get('/insert', (req, res) => {
-    insertMovies(db, (data) => {
-      res.send("Inserted 2 movies into the collection");
+  app.get('/:imdb', (req, res, next) => {
+    findMovie(db, req.params.imdb, (movie) => {
+      res.render('show-movie', { movie: movie });
     });
   });
 
-  app.get('/update', (req, res) => {
-    updateMovie(db, (data) => {
-      res.send("Updated movie with title Star Wars to Star Wars 2");
+  app.get('/:name', (req, res, next) => {
+    let name = req.params.name;
+    let getvar1 = req.query.getvar1;
+    let getvar2 = req.query.getvar2;
+    res.render('hello', { name: name, getvar1: getvar1, getvar2: getvar2 });
+  });
+
+  app.post('/edit-movie/:id', (req, res, next) => {
+    let movie = {
+      title: req.body.title,
+      year: req.body.year,
+      imdb: req.body.imdb,
+      id: req.params.id
+    }
+    updateMovie(db, movie, (data) => {
+      res.redirect('/');
     });
   });
 
-  app.get('/remove', (req, res) => {
-    removeMovie(db, (data) => {
-      res.send("Removed movie with title Pulp Fiction");
+  app.post('/delete-movie/:id', (req, res, next) => {
+    removeMovie(db, req.params.id, (data) => {
+      res.redirect('/');
     });
   });
 
-  // app.use((req, res) => res.sendStatus(404));
   app.use(errorHandler);
 
   app.listen(port, () => console.log(`Express listening on port ${port}`))
 });
 
-const insertMovies = (db, callback) => {
+const addMovie = (db, movie, callback) => {
   const collection = db.collection('movies');
-  collection.insertMany([
-    { "title": "Star Wars" },
-    { "title": "Pulp Fiction" }
-  ], (err, result) => {
-    assert.equal(err, null);
-    assert.equal(2, result.result.n);
-    assert.equal(2, result.ops.length);
-    callback(result);
-  });
-}
+  collection.insertOne(
+    { "title": movie.title, "year": movie.year, "imdb": movie.imdb },
+    (err, doc) => {
+      assert.equal(null, err);
+      callback(doc);
+    }
+  );
+};
+
+const findMovie = (db, imdb, callback) => {
+  const collection = db.collection('movies');
+  collection.findOne({ "imdb": imdb }, null,
+    (err, movie) => {
+      assert.equal(err, null);
+      callback(movie);
+    }
+  );
+};
 
 const findMovies = (db, callback) => {
   const collection = db.collection('movies');
@@ -93,11 +112,16 @@ const findMovies = (db, callback) => {
   });
 }
 
-const updateMovie = (db, callback) => {
+const updateMovie = (db, movie, callback) => {
   const collection = db.collection('movies');
   collection.updateOne(
-    { "title": "Star Wars" },
-    { $set: { "title": "Star Wars 2" } },
+    { "_id": new ObjectId(movie.id) },
+    { $set: {
+      "title": movie.title,
+      "year": movie.year,
+      "imdb": movie.imdb
+    } },
+    null,
     (err, result) => {
       assert.equal(err, null);
       assert.equal(1, result.result.n);
@@ -106,13 +130,13 @@ const updateMovie = (db, callback) => {
   );
 }
 
-const removeMovie = (db, callback) => {
+const removeMovie = (db, id, callback) => {
   const collection = db.collection('movies');
-  collection.deleteOne({"title": "Pulp Fiction"},
-    (err, result) => {
+  collection.deleteOne({ "_id": new ObjectId(id) }, null,
+    (err, doc) => {
       assert.equal(err, null);
-      assert.equal(1, result.result.n);
-      callback(result);
+      assert.equal(1, doc.result.n);
+      callback(doc);
     }
   );
 }
@@ -131,5 +155,5 @@ const indexCollection = (db, callback) => {
 const errorHandler = (err, req, res, next) => {
   console.error(err.message);
   console.error(err.stack);
-  res.status(500).render('error_template', { error: err });
+  res.status(500).render('error-template', { error: err });
 }
