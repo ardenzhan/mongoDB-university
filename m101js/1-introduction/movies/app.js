@@ -53,13 +53,6 @@ MongoClient.connect(url, { useNewUrlParser: true }, (err, client) => {
     });
   });
 
-  app.get('/:name', (req, res, next) => {
-    let name = req.params.name;
-    let getvar1 = req.query.getvar1;
-    let getvar2 = req.query.getvar2;
-    res.render('hello', { name: name, getvar1: getvar1, getvar2: getvar2 });
-  });
-
   app.post('/edit-movie/:id', (req, res, next) => {
     let movie = {
       title: req.body.title,
