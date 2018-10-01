@@ -1,25 +1,36 @@
-const MongoClient = require('mongodb').mongoClient;
+const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
 
-MongoClient.connect('mongodb://localhost:27017/crunchbase', (err, db) => {
+const url = 'mongodb://localhost:27017';
+const dbName = 'crunchbase';
 
-  assert.equal(err, null);
-  console.log("Successfully connected to MongoDB.");
+MongoClient.connect(url, { useNewUrlParser: true }, (err, client) => {
+  assert.equal(null, err);
+  console.log('Successfully connected to MongoDB.');
 
-  var query = {"category_code": "biotech"};
-  var projection = {"name": 1, "category_code": 1, "_id": 0};
+  const db = client.db(dbName);
 
-  var cursor = db.collection('companies').find(query);
-  cursor.project(projection);
+  let query = { "category_code": "biotech" };
 
-  cursor.forEach(
-    (doc) => {
-      console.log(doc.name + " is a " + doc.category_code + " company.");
-      console.log(doc);
-    },
-    (err) => {
-      assert.equal(err, null);
-      return db.close();
-    }
-  );
+  findCompanyCursor(db, query, (cursor) => {
+    let projection = { "name": 1, "category_code": 1, "_id": 0 };
+    cursor.project(projection);
+
+    cursor.forEach(
+      (company) => {
+        console.log(company.name, 'is a', company.category_code, 'company.');
+        console.log(company);
+      },
+      (err) => {
+        assert.equal(err, null);
+        client.close();
+      }
+    );
+  });
 });
+
+const findCompanyCursor = (db, query, callback) => {
+  const collection = db.collection('companies');
+  const cursor = collection.find(query);
+  callback(cursor);
+};
