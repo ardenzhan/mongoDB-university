@@ -71,6 +71,7 @@ function commandLineOptions() {
   ];
   const usage = commandLineUsage(sections);
 
+  // Three ways to check if property exists in object (all check differently):
   // if (!(options.firstYear && options.lastYear)) {
   // if (!(options.hasOwnProperty("firstYear") && options.hasOwnProperty("lastYear"))) {
   if (!("firstYear" in options && "lastYear" in options)) {
