@@ -15,9 +15,9 @@ MongoClient.connect(url, { useNewUrlParser: true }, (err, client) => {
   const db = client.db(dbName);
 
   const query = queryDocument(options);
+  const projection = projectionDocument(options);
 
   getCursor(db, query, (cursor) => {
-    let projection = projectionDocument(options);
     cursor.project(projection);
 
     let numMatches = 0;
@@ -45,32 +45,29 @@ const getCursor = (db, query, callback) => {
 
 const queryDocument = (options) => {
   console.log(options);
-
   let query = {};
-
   if ("overview" in options) {
     query.overview = { "$regex": options.overview, "$options": "i" };
   }
-
   return query;
 };
 
-const projectionDocument = (options, projection) => {
+const projectionDocument = (options) => {
   let projection = {
     "_id": 0,
     "name": 1,
     "founded_year": 1,
     "overview": 1
   };
-  callback(projection);
+  return projection;
 }
 
-const commandLineOptions = () => {
+function commandLineOptions(){
   const optionDefinitions = [
     { name: "overview", alias: "o", type: String }
-  ]);
+  ];
 
-  const options = commandLineArgs(optionDefinitions);
+  let options = commandLineArgs(optionDefinitions);
 
   const sections = [
     {
