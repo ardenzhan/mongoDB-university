@@ -45,10 +45,17 @@ const getCursor = (db, query, callback) => {
 
 const queryDocument = (options) => {
   console.log(options);
+
   let query = {};
+
   if ("overview" in options) {
     query.overview = { "$regex": options.overview, "$options": "i" };
   }
+
+  if ("milestones" in options) {
+    query["milestones.source_description"] = { "$regex": options.milestones, "$options": "i" };
+  }
+
   return query;
 };
 
@@ -59,12 +66,22 @@ const projectionDocument = (options) => {
     "founded_year": 1,
     "overview": 1
   };
+
+  if ("overview" in options) {
+    projection.overview = 1;
+  }
+
+  if ("milestones" in options) {
+    projection["milestones.source_description"] = 1;
+  }
+
   return projection;
 }
 
 function commandLineOptions(){
   const optionDefinitions = [
-    { name: "overview", alias: "o", type: String }
+    { name: "overview", alias: "o", type: String },
+    { name: "milestones", alias: "m", type: String }
   ];
 
   let options = commandLineArgs(optionDefinitions);
