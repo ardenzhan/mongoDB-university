@@ -1,6 +1,5 @@
 ## Quiz
 **Projection**
-Write ONE LINE OF CODE that will cause only the name and number\_of\_employees fields to be returned in query results.
 ```
 var MongoClient = require('mongodb').MongoClient,
     assert = require('assert');
@@ -27,6 +26,7 @@ MongoClient.connect('mongodb://localhost:27017/crunchbase', function(err, db) {
     );
 });
 ```
+Write ONE LINE OF CODE that will cause only the name and number\_of\_employees fields to be returned in query results.
 ```
 cursor.project({"name": 1, "number_of_employees": 1, "_id": 0});
 ```
