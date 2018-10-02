@@ -8,9 +8,9 @@ const options = commandLineOptions();
 const url = 'mongodb://localhost:27017';
 const dbName = 'crunchbase';
 
-MongoClient.connect(url, (err, client) => {
+MongoClient.connect(url, { useNewUrlParser: true }, (err, client) => {
   assert.equal(null, err);
-  console.log("Connected successfully to server");
+  console.log('Successfully connected to MongoDB.');
 
   const db = client.db(dbName);
 
@@ -24,15 +24,15 @@ MongoClient.connect(url, (err, client) => {
   let numMatches = 0;
 
   cursor.forEach(
-    doc => {
+    (doc) => {
       numMatches += 1;
       console.log(doc);
     },
-    err => {
+    (err) => {
       assert.equal(err, null);
       console.log("Our query was: " + JSON.stringify(query));
       console.log("Matching documents: " + numMatches);
-      return db.close();
+      client.close();
     }
   );
 });
