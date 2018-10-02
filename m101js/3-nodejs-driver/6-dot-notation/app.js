@@ -16,10 +16,18 @@ MongoClient.connect(url, { useNewUrlParser: true }, (err, client) => {
 
   const query = queryDocument(options);
 
-  const projection = {"_id": 0, "name": 1, "founded_year": 1,
-                      "number_of_employees": 1, "ipo.valuation_amount": 1};
+  const projection = {
+    "_id": 0,
+    "name": 1,
+    "founded_year": 1,
+    "number_of_employees": 1,
+    "ipo.valuation_amount": 1,
+    "offices.country_code": 1
+  };
 
-  const cursor = db.collection('companies').find(query, projection);
+  const cursor = db.collection('companies').find(query);
+  cursor.project(projection);
+
   let numMatches = 0;
 
   cursor.forEach(
@@ -56,6 +64,10 @@ const queryDocument = (options) => {
     }
   }
 
+  if ("country" in options) {
+    query["offices.country_code"] = options.country;
+  }
+
   return query;
 };
 
@@ -64,7 +76,8 @@ function commandLineOptions(){
     { name: "firstYear", alias: "f", type: Number },
     { name: "lastYear", alias: "l", type: Number },
     { name: "employees", alias: "e", type: Number },
-    { name: "ipo", alias: "i", type: String }
+    { name: "ipo", alias: "i", type: String },
+    { name: "country", alias: "c", type: String }
   ];
 
   let options = commandLineArgs(optionDefinitions);
