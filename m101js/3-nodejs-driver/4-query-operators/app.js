@@ -18,27 +18,33 @@ MongoClient.connect(url, { useNewUrlParser: true }, (err, client) => {
   const projection = {"_id": 1, "name": 1, "founded_year": 1,
                       "number_of_employees": 1, "crunchbase_url": 1};
 
-  let cursor = db.collection('companies').find(query);
-  cursor.project(projection);
+  getCursor(db, query, (cursor) => {
+    cursor.project(projection);
 
-  let numMatches = 0;
+    let numMatches = 0;
 
-  cursor.forEach(
-    (doc) => {
-      numMatches += 1;
-      console.log(doc);
-    },
-    (err) => {
-      assert.equal(err, null);
-      console.log("Our query was: " + JSON.stringify(query));
-      console.log("Matching documents: " + numMatches);
-      client.close();
-    }
-  );
+    cursor.forEach(
+      (doc) => {
+        numMatches += 1;
+        console.log(doc);
+      },
+      (err) => {
+        assert.equal(err, null);
+        console.log("Query: " + JSON.stringify(query));
+        console.log("Matching documents: " + numMatches);
+        client.close();
+      }
+    );
+  });
 });
 
+const getCursor = (db, query, callback) => {
+  const collection = db.collection('companies');
+  const cursor = collection.find(query);
+  callback(cursor);
+};
+
 function queryDocument(options) {
-  console.log(options);
   let query = {
     "founded_year": {
       "$gte": options.firstYear,
