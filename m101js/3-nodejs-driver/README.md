@@ -1,5 +1,5 @@
 ## Quiz
-# Projection
+**Projection**
 Write ONE LINE OF CODE that will cause only the name and number\_of\_employees fields to be returned in query results.
 ```
 var MongoClient = require('mongodb').MongoClient,
@@ -15,7 +15,6 @@ MongoClient.connect('mongodb://localhost:27017/crunchbase', function(err, db) {
     var cursor = db.collection('companies').find(query);
 
     /* TODO: Write your line of code here. */
-    cursor.project({"name": 1, "number_of_employees": 1, "_id": 0});
 
     cursor.forEach(
         function(doc) {
@@ -28,4 +27,6 @@ MongoClient.connect('mongodb://localhost:27017/crunchbase', function(err, db) {
     );
 });
 ```
-
+```
+cursor.project({"name": 1, "number_of_employees": 1, "_id": 0});
+```
