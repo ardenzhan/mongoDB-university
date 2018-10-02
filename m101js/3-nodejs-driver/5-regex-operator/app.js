@@ -1,85 +1,91 @@
-var MongoClient = require('mongodb').MongoClient,
-    commandLineArgs = require('command-line-args'), 
-    assert = require('assert');
+const MongoClient = require('mongodb').MongoClient;
+const assert = require('assert');
 
+const commandLineArgs = require('command-line-args');
+const commandLineUsage = require('command-line-usage');
+const options = commandLineOptions();
 
-var options = commandLineOptions();
+const url = 'mongodb://localhost:27017';
+const dbName = 'crunchbase';
 
+MongoClient.connect(url, { useNewUrlParser: true }, (err, client) => {
+  assert.equal(null, err);
+  console.log('Successfully connected to MongoDB.');
 
-MongoClient.connect('mongodb://localhost:27017/crunchbase', function(err, db) {
+  const db = client.db(dbName);
 
-    assert.equal(err, null);
-    console.log("Successfully connected to MongoDB.");
-    
-    var query = queryDocument(options);
-    var projection = projectionDocument(options);
+  const query = queryDocument(options);
+  const projection = projectionDocument(options);
 
-    var cursor = db.collection('companies').find(query);
+  getCursor(db, query, (cursor) => {
     cursor.project(projection);
-    
-    var numMatches = 0;
+
+    let numMatches = 0;
 
     cursor.forEach(
-        function(doc) {
-            numMatches = numMatches + 1;
-            console.log( doc );
-        },
-        function(err) {
-            assert.equal(err, null);
-            console.log("Our query was:" + JSON.stringify(query));
-            console.log("Matching documents: " + numMatches);
-            return db.close();
-        }
+      (doc) => {
+        numMatches = numMatches + 1;
+        console.log(doc);
+      },
+      (err) => {
+        assert.equal(err, null);
+        console.log("Our query was:", JSON.stringify(query));
+        console.log("Matching documents:", numMatches);
+        client.close();
+      }
     );
-
+  });
 });
 
+const getCursor = (db, query, callback) => {
+  const collection = db.collection('companies');
+  const cursor = collection.find(query);
+  callback(cursor);
+};
 
-function queryDocument(options) {
+const queryDocument = (options) => {
+  console.log(options);
+  let query = {};
+  if ("overview" in options) {
+    query.overview = { "$regex": options.overview, "$options": "i" };
+  }
+  return query;
+};
 
-    console.log(options);
-    
-    var query = {};
+const projectionDocument = (options) => {
+  let projection = {
+    "_id": 0,
+    "name": 1,
+    "founded_year": 1,
+    "overview": 1
+  };
+  return projection;
+}
 
-    if ("overview" in options) {
-        query.overview = {"$regex": options.overview, "$options": "i"};
+function commandLineOptions(){
+  const optionDefinitions = [
+    { name: "overview", alias: "o", type: String }
+  ];
+
+  let options = commandLineArgs(optionDefinitions);
+
+  const sections = [
+    {
+      header: "Usage",
+      content: "You must supply at least one option. See below."
+    },
+    {
+      header: "Options",
+      optionList: optionDefinitions
     }
-    
-    return query;
-    
-}
+  ];
 
+  const usage = commandLineUsage(sections);
 
-function projectionDocument(options) {
+  if (Object.keys(options).length < 1) {
+    console.log(usage);
+    process.exit();
+  }
 
-    var projection = {
-        "_id": 0,
-        "name": 1,
-        "founded_year": 1,
-        "overview": 1
-    };
-
-    return projection;
-}
-
-
-function commandLineOptions() {
-
-    var cli = commandLineArgs([
-        { name: "overview", alias: "o", type: String }
-    ]);
-    
-    var options = cli.parse()
-    if (Object.keys(options).length < 1) {
-        console.log(cli.getUsage({
-            title: "Usage",
-            description: "You must supply at least one option. See below."
-        }));
-        process.exit();
-    }
-
-    return options;
-    
-}
-
-
+  return options;
+};
