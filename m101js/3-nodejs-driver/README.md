@@ -1,5 +1,5 @@
 ## Quiz
-**Projection**
+### Projection
 ```
 var MongoClient = require('mongodb').MongoClient,
     assert = require('assert');
@@ -31,7 +31,7 @@ Write ONE LINE OF CODE that will cause only the name and number\_of\_employees f
 cursor.project({"name": 1, "number_of_employees": 1, "_id": 0});
 ```
 
-**Sort, Skip, Limit**
+### Sort, Skip, Limit
 MongoDB will always sort, skip, then limit. The order of the constraints applied to the cursor doesn't matter.
 
 Suppose you have a MongoDB collection called school.grades that is composed solely of these 20 documents:
