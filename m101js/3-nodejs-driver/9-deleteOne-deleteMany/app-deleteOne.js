@@ -1,51 +1,42 @@
-var MongoClient = require('mongodb').MongoClient,
-    assert = require('assert');
+const MongoClient = require('mongodb').MongoClient;
+const assert = require('assert');
 
+const url = 'mongodb://localhost:27017';
+const dbName = 'crunchbase';
 
-MongoClient.connect('mongodb://localhost:27017/crunchbase', function(err, db) {
+MongoClient.connect(url, { useNewUrlParser: true }, (err, client) => {
+  assert.equal(err, null);
+  console.log('Successfully connected to MongoDB.');
 
-    assert.equal(err, null);
-    console.log("Successfully connected to MongoDB.");
-    
-    var query = {"permalink": {"$exists": true, "$ne": null}};
-    var projection = {"permalink": 1, "updated_at": 1};
+  const db = client.db(dbName);
 
-    var cursor = db.collection('companies').find(query);
-    cursor.project(projection);
-    cursor.sort({"permalink": 1})
+  let query = {'permalink': {'$exists': true, '$ne': null}};
+  let projection = {'permalink': 1, 'updated_at': 1};
 
-    var numToRemove = 0;
+  let cursor = db.collection('companies').find(query);
+  cursor.project(projection);
+  cursor.sort({'permalink': 1})
 
-    var previous = { "permalink": "", "updated_at": "" };
-    cursor.forEach(
-        function(doc) {
+  let numToRemove = 0;
 
-            if ( (doc.permalink == previous.permalink) && (doc.updated_at == previous.updated_at) ) {
-                console.log(doc.permalink);
+  let prev = { 'permalink': '', 'updated_at': '' };
+  cursor.forEach(
+    (doc) => {
+      if ((doc.permalink == prev.permalink) && (doc.updated_at == prev.updated_at)) {
+        console.log(doc.permalink);
+        numToRemove = numToRemove + 1;
 
-                numToRemove = numToRemove + 1;
+        let filter = {'_id': doc._id};
 
-                var filter = {"_id": doc._id};
-
-                db.collection('companies').deleteOne(filter, function(err, res) {
-
-                    assert.equal(err, null);
-                    console.log(res.result);
-
-                });
-
-            }
-            
-            previous = doc;
-            
-        },
-        function(err) {
-
-            assert.equal(err, null);
-
-        }
-    );
-
+        db.collection('companies').deleteOne(filter, (err, res) => {
+          assert.equal(err, null);
+          console.log(res.result);
+        });
+      }
+      prev = doc;
+    },
+    (err) => {
+      assert.equal(err, null);
+    }
+  );
 });
-
-

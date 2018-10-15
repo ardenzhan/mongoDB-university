@@ -1,47 +1,42 @@
-var MongoClient = require('mongodb').MongoClient,
-    assert = require('assert');
+const MongoClient = require('mongodb').MongoClient;
+const assert = require('assert');
 
+const url = 'mongodb://localhost:27017';
+const dbName = 'crunchbase';
 
-MongoClient.connect('mongodb://localhost:27017/crunchbase', function(err, db) {
+MongoClient.connect(url, { useNewUrlParser: true }, (err, client) => {
+  assert.equal(err, null);
+  console.log('Successfully connected to MongoDB.');
 
-    assert.equal(err, null);
-    console.log("Successfully connected to MongoDB.");
-    
-    var query = {"permalink": {$exists: true, $ne: null}};
-    var projection = {"permalink": 1, "updated_at": 1};
+  const db = client.db(dbName);
 
-    var cursor = db.collection('companies').find(query);
-    cursor.project(projection);
-    cursor.sort({"permalink": 1})
+  let query = {'permalink': {'$exists': true, '$ne': null}};
+  let projection = {'permalink': 1, 'updated_at': 1};
 
-    var markedForRemoval = [];
+  let cursor = db.collection('companies').find(query);
+  cursor.project(projection);
+  cursor.sort({'permalink': 1})
 
-    var previous = { "permalink": "", "updated_at": "" };
-    cursor.forEach(
-        function(doc) {
+  let markedForRemoval = [];
 
-            if ( (doc.permalink == previous.permalink) && (doc.updated_at == previous.updated_at) ) {
-                markedForRemoval.push(doc._id);
-            }
+  let prev = { 'permalink': '', 'updated_at': '' };
+  cursor.forEach(
+    (doc) => {
+      if ((doc.permalink == prev.permalink) && (doc.updated_at == prev.updated_at)){
+        markedForRemoval.push(doc._id);
+      }
+      prev = doc;
+    },
+    (err) => {
+      assert.equal(err, null);
+      let filter = {'_id': {'$in': markedForRemoval}};
 
-            previous = doc;
-        },
-        function(err) {
+      db.collection('companies').deleteMany(filter, (err, res) => {
+        console.log(res.result);
+        console.log(markedForRemoval.length + ' documents removed.');
 
-            assert.equal(err, null);
-
-            var filter = {"_id": {"$in": markedForRemoval}};
-
-            db.collection("companies").deleteMany(filter, function(err, res) {
-
-                console.log(res.result);
-                console.log(markedForRemoval.length + " documents removed.");
-
-                return db.close();
-            });
-        }
-    );
-
+        client.close();
+      });
+    }
+  );
 });
-
-
