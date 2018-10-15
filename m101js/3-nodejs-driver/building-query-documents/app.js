@@ -22,7 +22,7 @@ let companiesSeen = {};
 const queryMongoDB = (query, queryNum) => {
   const url = 'mongodb://localhost:27017';
   const dbName = 'crunchbase';
-  MongoClient.connect(url, (err, client) => {
+  MongoClient.connect(url, { useNewUrlParser: true }, (err, client) => {
     assert.equal(err, null);
     console.log("Successfully connected to MongoDB for query: " + queryNum);
 
@@ -92,7 +92,7 @@ const report = (options) => {
   }
 
   let companiesList = Object.keys(companiesSeen).sort();
-  console.log("Companies found: " + companiesList);
+  console.log("Companies found: " + companiesList.join(', '));
   console.log("Total employees in companies identified: " + totalEmployees);
   console.log("Total unique companies: " + companiesList.length);
   console.log("Average number of employees per company: " + Math.floor(totalEmployees / companiesList.length));
