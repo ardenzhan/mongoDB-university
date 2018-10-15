@@ -75,3 +75,33 @@ Which student's documents will be returned as part of a subsequent call to toArr
  - [ ] Kim, Sacha
  - [ ] David, Steve
  - [ ] Burt, Stan
+
+## Homework
+### 3.1
+When using find() in the Node.js driver, which of the following best describes when the driver will send a query to MongoDB?
+ - [x] When we call a cursor method passing a callback function to process query results
+ - [ ] When find() is called
+ - [ ] When a cursor's project() method is called
+ - [ ] When a cursor's skip() method is called
+ - [ ] When a cursor's limit() method is called
+ - [ ] When a cursor's sort() method is called
+ - [ ] Only when forEach is called
+
+### 3.2
+Sort, Skip, Limit Quiz
+```
+var cursor = db.collection("grades").find({});
+cursor.skip(6);
+cursor.limit(2);
+cursor.sort({"grade": 1});
+```
+- [x] Seamus, Bob
+
+### 3.3
+The queryDocument() function builds an object that will be passed to find() to match a set of documents from the crunchbase.companies collection.
+
+**Enter the average number (three digits) of employees per company reported in the output.**
+As a check, the total number of unique companies reported by the application should equal 42.
+```
+169
+```
