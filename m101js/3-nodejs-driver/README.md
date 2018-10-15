@@ -98,10 +98,49 @@ cursor.sort({"grade": 1});
 - [x] Seamus, Bob
 
 ### 3.3
-The queryDocument() function builds an object that will be passed to find() to match a set of documents from the crunchbase.companies collection.
-
 **Enter the average number (three digits) of employees per company reported in the output.**
 As a check, the total number of unique companies reported by the application should equal 42.
 ```
-169
+function queryDocument(options) {
+    var query = {
+        "tag_list": {"$regex": "social-networking"},
+    };
+
+    if (("firstYear" in options) && ("lastYear" in options)) {
+        query.founded_year = { "$gte": options.firstYear, "$lte": options.lastYear };
+    } else if ("firstYear" in options) {
+        query.founded_year = { "$gte": options.firstYear };
+    } else if ("lastYear" in options) {
+        query.founded_year = { "$lte": options.lastYear };
+    }
+
+    if ("city" in options) {
+        query["offices.city"] = options.city;
+    }
+
+    return query;
+}
+```
+
+### 3.4
+**Enter the average number (two digits) of employees per company reported in the output.**
+As a check, the total number of unique companies reported by the application should equal 194.
+```
+function queryDocument(options) {
+    var query = {};
+
+    if ("overview" in options) {
+        query["$or"] = [
+            {"overview": {"$regex": options.overview, "$options": "i"}},
+            {"tag_list": {"$regex": options.overview, "$options": "i"}}
+        ];
+    }
+
+    if ("milestones" in options) {
+        query["milestones.source_description"] =
+            {"$regex": options.milestones, "$options": "i"};
+    }
+
+    return query;
+}
 ```
