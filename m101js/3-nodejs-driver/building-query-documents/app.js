@@ -98,7 +98,7 @@ const report = (options) => {
   console.log("Average number of employees per company: " + Math.floor(totalEmployees / companiesList.length));
 }
 
-for (var i=0; i<allOptions.length; i++) {
-    var query = queryDocument(allOptions[i]);
-    queryMongoDB(query, i);
+for (let i = 0; i < allOptions.length; i++) {
+  let query = queryDocument(allOptions[i]);
+  queryMongoDB(query, i);
 }
