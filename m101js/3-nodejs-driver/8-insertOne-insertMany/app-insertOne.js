@@ -1,33 +1,33 @@
-var MongoClient = require('mongodb').MongoClient,
-    Twitter = require('twitter'),
-    assert = require('assert');
+const MongoClient = require('mongodb').MongoClient;
+const Twitter = require('twitter');
+const assert = require('assert');
 
 require('dotenv').load();
-var twitterClient = new Twitter({
-    consumer_key: process.env.TWITTER_CONSUMER_KEY,
-    consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
-    access_token_key: process.env.TWITTER_ACCESS_TOKEN_KEY,
-    access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET
+
+const TwitterClient = new Twitter({
+  consumer_key: process.env.TWITTER_CONSUMER_KEY,
+  consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
+  access_token_key: process.env.TWITTER_ACCESS_TOKEN_KEY,
+  access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET
 });
 
+const url = 'mongodb://localhost:27017';
+const dbName = 'social';
 
-MongoClient.connect('mongodb://localhost:27017/social', function(err, db) {
+MongoClient.connect(url, { useNewUrlParser: true }, (err, client) => {
+  assert.equal(null, err);
+  console.log('Successfully connected to MongoDB.');
 
-    assert.equal(null, err);
-    console.log("Successfully connected to MongoDB.");
+  const db = client.db(dbName);
 
-    twitterClient.stream('statuses/filter', {track: "marvel"}, function(stream) {
-        stream.on('data', function(status) {
-            console.log(status.text);
-            db.collection("statuses").insertOne(status, function(err, res) {
-                console.log("Inserted document with _id: " + res.insertedId + "\n");
-            });
-        });
- 
-        stream.on('error', function(error) {
-            throw error;
-        });
+  TwitterClient.stream('statuses/filter', { track: 'marvel' }, (stream) => {
+    stream.on('data', (status) => {
+      console.log(status.text);
+      db.collection('statuses').insertOne(status, (err, res) => {
+        console.log('Inserted document with _id: ' + res.insertedId + '\n');
+      });
     });
 
+    stream.on('error', (error) => { throw error; });
+  });
 });
-
