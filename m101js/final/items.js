@@ -1,59 +1,59 @@
-var MongoClient = require('mongodb').MongoClient,
-    assert = require('assert');
+const MongoClient = require('mongodb').MongoClient;
+const assert = require('assert');
 
-// const ItemDAO = (database) => {
 class ItemDAO {
   constructor(database) {
     this.db = database;
   }
 
-
-    // this.db = database;
   getCategories(callback) {
+    /*
+    * TODO-lab1A
+    *
+    * LAB #1A: Implement the getCategories() method.
+    *
+    * Write an aggregation query on the "item" collection to return the
+    * total number of items in each category. The documents in the array
+    * output by your aggregation should contain fields for "_id" and "num".
+    *
+    * HINT: Test your mongodb query in the shell first before implementing
+    * it in JavaScript.
+    *
+    * In addition to the categories created by your aggregation query,
+    * include a document for category "All" in the array of categories
+    * passed to the callback. The "All" category should contain the total
+    * number of items across all categories as its value for "num". The
+    * most efficient way to calculate this value is to iterate through
+    * the array of categories produced by your aggregation query, summing
+    * counts of items in each category.
+    *
+    * Ensure categories are organized in alphabetical order before passing
+    * to the callback.
+    *
+    */
+    let pipeline = [
+      { "$group": { _id: "$category", num: { "$sum": 1 } } },
+      { "$sort": { _id: 1 } }
+    ];
 
-    // this.getCategories = function(callback) {
-        // "use strict";
+    this.db.collection("item").aggregate(pipeline).toArray((err, categories) => {
+      assert.equal(err, null);
 
-        /*
-        * TODO-lab1A
-        *
-        * LAB #1A: Implement the getCategories() method.
-        *
-        * Write an aggregation query on the "item" collection to return the
-        * total number of items in each category. The documents in the array
-        * output by your aggregation should contain fields for "_id" and "num".
-        *
-        * HINT: Test your mongodb query in the shell first before implementing
-        * it in JavaScript.
-        *
-        * In addition to the categories created by your aggregation query,
-        * include a document for category "All" in the array of categories
-        * passed to the callback. The "All" category should contain the total
-        * number of items across all categories as its value for "num". The
-        * most efficient way to calculate this value is to iterate through
-        * the array of categories produced by your aggregation query, summing
-        * counts of items in each category.
-        *
-        * Ensure categories are organized in alphabetical order before passing
-        * to the callback.
-        *
-        */
+      let total = 0;
+      for (let i = 0; i < categories.length; i++) {
+        total += categories[i].num;
+      }
+      categories.push({ _id: "All", num: total });
 
-        var categories = [];
-        var category = {
-            _id: "All",
-            num: 9999
-        };
+      callback(categories);
+    });
+  }
 
-        categories.push(category)
-
-        // TODO-lab1A Replace all code above (in this method).
-
-        // TODO Include the following line in the appropriate
-        // place within your code to pass the categories array to the
-        // callback.
-        callback(categories);
-    }
+    // TODO-lab1A Replace all code above (in this method).
+    // TODO Include the following line in the appropriate
+    // place within your code to pass the categories array to the
+    // callback.
+    // callback(categories);
 
   getItems(category, page, itemsPerPage, callback) {
 
