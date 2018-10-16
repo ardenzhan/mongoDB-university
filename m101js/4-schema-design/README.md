@@ -5,10 +5,10 @@ Please review the data model for the Crunchbase companies data set. The document
 Suppose we are building a web site that will display companies data in several different views. Based on the lessons in this module and ignoring other concerns, which of the following conditions favor embedding milestones (as they are in the facebook.json example) over maintaining milestones in a separate collection. Check all that apply.
 
 Check all that apply:
- - [ ] The number of milestones for a company rarely exceeds 10 per year.
+ - [x] The number of milestones for a company rarely exceeds 10 per year.
  - [ ] Milestones will never contain more than 15 fields
  - [ ] An individual milestone entry will always be smaller than 16K bytes
- - [ ] One frequently displayed view of our data displays company details such as the "name", "founded_year", "twitter_username", etc. as well as milestones.
+ - [x] One frequently displayed view of our data displays company details such as the "name", "founded_year", "twitter_username", etc. as well as milestones.
  - [ ] Some of the milestone fields such as "stoneable_type" and "stoneable" are frequently the same from one milestone to another.
 
 ### 4.2
