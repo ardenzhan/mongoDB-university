@@ -1,31 +1,18 @@
-/*
-  Copyright (c) 2008 - 2016 MongoDB, Inc. <http://mongodb.com>
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-*/
-
-
 var MongoClient = require('mongodb').MongoClient,
     assert = require('assert');
 
-
-function ItemDAO(database) {
-    "use strict";
-
+// const ItemDAO = (database) => {
+class ItemDAO {
+  constructor(database) {
     this.db = database;
+  }
 
-    this.getCategories = function(callback) {
-        "use strict";
+
+    // this.db = database;
+  getCategories(callback) {
+
+    // this.getCategories = function(callback) {
+        // "use strict";
 
         /*
         * TODO-lab1A
@@ -68,9 +55,11 @@ function ItemDAO(database) {
         callback(categories);
     }
 
+  getItems(category, page, itemsPerPage, callback) {
 
-    this.getItems = function(category, page, itemsPerPage, callback) {
-        "use strict";
+
+    // this.getItems = function(category, page, itemsPerPage, callback) {
+    //     "use strict";
 
         /*
          * TODO-lab1B
@@ -108,9 +97,9 @@ function ItemDAO(database) {
         callback(pageItems);
     }
 
-
-    this.getNumItems = function(category, callback) {
-        "use strict";
+  getNumItems(category, callback) {
+    // this.getNumItems = function(category, callback) {
+        // "use strict";
 
         var numItems = 0;
 
@@ -134,9 +123,10 @@ function ItemDAO(database) {
         callback(numItems);
     }
 
+  searchItems(query, page, itemsPerPage, callback) {
 
-    this.searchItems = function(query, page, itemsPerPage, callback) {
-        "use strict";
+//     this.searchItems = function(query, page, itemsPerPage, callback) {
+//         "use strict";
 
         /*
          * TODO-lab2A
@@ -177,8 +167,9 @@ function ItemDAO(database) {
     }
 
 
-    this.getNumSearchItems = function(query, callback) {
-        "use strict";
+  getNumSearchItems(query, callback) {
+    // this.getNumSearchItems = function(query, callback) {
+    //     "use strict";
 
         var numItems = 0;
 
@@ -199,8 +190,9 @@ function ItemDAO(database) {
     }
 
 
-    this.getItem = function(itemId, callback) {
-        "use strict";
+  getItem(itemId, callback) {
+    // this.getItem = function(itemId, callback) {
+    //     "use strict";
 
         /*
          * TODO-lab3
@@ -223,8 +215,9 @@ function ItemDAO(database) {
     }
 
 
-    this.getRelatedItems = function(callback) {
-        "use strict";
+  getRelatedItems(callback) {
+    // this.getRelatedItems = function(callback) {
+    //     "use strict";
 
         this.db.collection("item").find({})
             .limit(4)
@@ -235,8 +228,9 @@ function ItemDAO(database) {
     };
 
 
-    this.addReview = function(itemId, comment, name, stars, callback) {
-        "use strict";
+  addReview(itemId, comment, name, stars, callback) {
+    // this.addReview = function(itemId, comment, name, stars, callback) {
+    //     "use strict";
 
         /*
          * TODO-lab4
@@ -269,8 +263,9 @@ function ItemDAO(database) {
     }
 
 
-    this.createDummyItem = function() {
-        "use strict";
+  createDummyItem() {
+    // this.createDummyItem = function() {
+    //     "use strict";
 
         var item = {
             _id: 1,
@@ -287,6 +282,5 @@ function ItemDAO(database) {
         return item;
     }
 }
-
 
 module.exports.ItemDAO = ItemDAO;
