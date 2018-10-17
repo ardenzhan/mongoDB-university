@@ -170,42 +170,33 @@ class ItemDAO {
   }
 
 
+  /*
+   * TODO LAB #3: Implement the getItem() method.
+   *
+   * Using the itemId parameter, query the "item" collection by
+   * _id and pass the matching item to the callback function.
+   *
+   */
   getItem(itemId, callback) {
-    // this.getItem = function(itemId, callback) {
-    //     "use strict";
+    this.db.collection('item').find({ _id: itemId }).toArray((err, items) => {
+      assert.equal(err, null);
 
-        /*
-         * TODO-lab3
-         *
-         * LAB #3: Implement the getItem() method.
-         *
-         * Using the itemId parameter, query the "item" collection by
-         * _id and pass the matching item to the callback function.
-         *
-         */
-
-        var item = this.createDummyItem();
-
-        // TODO-lab3 Replace all code above (in this method).
-
-        // TODO Include the following line in the appropriate
-        // place within your code to pass the matching item
-        // to the callback.
-        callback(item);
-    }
-
+      let item = null;
+      if (items.length > 0) {
+        item = items[0];
+      }
+      callback(item);
+    });
+  }
 
   getRelatedItems(callback) {
-    // this.getRelatedItems = function(callback) {
-    //     "use strict";
-
-        this.db.collection("item").find({})
-            .limit(4)
-            .toArray(function(err, relatedItems) {
-                assert.equal(null, err);
-                callback(relatedItems);
-            });
-    };
+    this.db.collection('item').find({})
+    .limit(4)
+    .toArray((err, relatedItems) => {
+      assert.equal(err, null);
+      callback(relatedItems);
+    });
+  }
 
 
   addReview(itemId, comment, name, stars, callback) {
