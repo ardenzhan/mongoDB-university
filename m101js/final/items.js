@@ -175,7 +175,6 @@ class ItemDAO {
    *
    * Using the itemId parameter, query the "item" collection by
    * _id and pass the matching item to the callback function.
-   *
    */
   getItem(itemId, callback) {
     this.db.collection('item').find({ _id: itemId }).toArray((err, items) => {
@@ -199,59 +198,47 @@ class ItemDAO {
   }
 
 
+  /*
+   * TODO LAB #4: Implement addReview().
+   *
+   * Using the itemId parameter, update the appropriate document in the
+   * "item" collection with a new review. Reviews are stored as an
+   * array value for the key "reviews". Each review has the fields:
+   * "name", "comment", "stars", and "date".
+   */
   addReview(itemId, comment, name, stars, callback) {
-    // this.addReview = function(itemId, comment, name, stars, callback) {
-    //     "use strict";
-
-        /*
-         * TODO-lab4
-         *
-         * LAB #4: Implement addReview().
-         *
-         * Using the itemId parameter, update the appropriate document in the
-         * "item" collection with a new review. Reviews are stored as an
-         * array value for the key "reviews". Each review has the fields:
-         * "name", "comment", "stars", and "date".
-         *
-         */
-
-        var reviewDoc = {
-            name: name,
-            comment: comment,
-            stars: stars,
-            date: Date.now()
-        }
-
-        // TODO replace the following two lines with your code that will
-        // update the document with a new review.
-        var doc = this.createDummyItem();
-        doc.reviews = [reviewDoc];
-
-        // TODO Include the following line in the appropriate
-        // place within your code to pass the updated doc to the
-        // callback.
-        callback(doc);
+    let reviewDoc = {
+      name: name,
+      comment: comment,
+      stars: stars,
+      date: Date.now()
     }
+
+    this.db.collection('item').updateOne(
+      { _id: itemId },
+      { "$push": { reviews: reviewDoc } },
+      (err, doc) => {
+        assert.equal(err, null);
+        callback(doc);
+      });
+  }
 
 
   createDummyItem() {
-    // this.createDummyItem = function() {
-    //     "use strict";
+    let item = {
+      _id: 1,
+      title: "Gray Hooded Sweatshirt",
+      description: "The top hooded sweatshirt we offer",
+      slogan: "Made of 100% cotton",
+      stars: 0,
+      category: "Apparel",
+      img_url: "/img/products/hoodie.jpg",
+      price: 29.99,
+      reviews: []
+    };
 
-        var item = {
-            _id: 1,
-            title: "Gray Hooded Sweatshirt",
-            description: "The top hooded sweatshirt we offer",
-            slogan: "Made of 100% cotton",
-            stars: 0,
-            category: "Apparel",
-            img_url: "/img/products/hoodie.jpg",
-            price: 29.99,
-            reviews: []
-        };
-
-        return item;
-    }
+    return item;
+  }
 }
 
 module.exports.ItemDAO = ItemDAO;
